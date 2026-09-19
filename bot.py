@@ -18,7 +18,7 @@ logging.basicConfig(
 
 BOT_TOKEN = os.environ["BOT_TOKEN"]
 
-# Flask server for Render
+# Render web server
 app = Flask(__name__)
 
 
@@ -37,22 +37,42 @@ def run_web_server():
     app.run(host="0.0.0.0", port=port)
 
 
+# =========================
+# START MENU
+# =========================
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     keyboard = [
         [
             InlineKeyboardButton("📚 Learn English", callback_data="learn"),
             InlineKeyboardButton("🎧 Podcasts", callback_data="podcast"),
         ],
         [
-            InlineKeyboardButton("🎬 YouTube Videos", callback_data="videos"),
-            InlineKeyboardButton("📖 Vocabulary", callback_data="vocabulary"),
+            InlineKeyboardButton(
+                "🎬 YouTube Videos",
+                callback_data="videos"
+            ),
+            InlineKeyboardButton(
+                "📖 Vocabulary",
+                callback_data="vocabulary"
+            ),
         ],
         [
-            InlineKeyboardButton("📝 Grammar Practice", callback_data="grammar"),
-            InlineKeyboardButton("🗣️ Speaking Practice", callback_data="speaking"),
+            InlineKeyboardButton(
+                "📝 Grammar Practice",
+                callback_data="grammar"
+            ),
+            InlineKeyboardButton(
+                "🗣️ Speaking Practice",
+                callback_data="speaking"
+            ),
         ],
         [
-            InlineKeyboardButton("ℹ️ About", callback_data="about"),
+            InlineKeyboardButton(
+                "ℹ️ About",
+                callback_data="about"
+            ),
         ],
     ]
 
@@ -67,62 +87,179 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-async def button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+# =========================
+# BUTTONS
+# =========================
+
+async def button_handler(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
     query = update.callback_query
     await query.answer()
 
+    # YouTube
+    if query.data == "videos":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "▶️ Open YouTube Channel",
+                    url="https://youtube.com/@thespeakingenglishchannel"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    "⬅️ Back to Menu",
+                    callback_data="back"
+                )
+            ],
+        ]
+
+        await query.edit_message_text(
+            "🎬 YouTube Videos\n\n"
+            "Watch The Speaking English Channel on YouTube "
+            "and improve your English through practical lessons, "
+            "real-life conversations, vocabulary, grammar, "
+            "and speaking practice.\n\n"
+            "Tap below to visit our YouTube channel. 👇",
+            reply_markup=InlineKeyboardMarkup(keyboard),
+        )
+
+        return
+
+    # Back to Menu
+    if query.data == "back":
+
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "📚 Learn English",
+                    callback_data="learn"
+                ),
+                InlineKeyboardButton(
+                    "🎧 Podcasts",
+                    callback_data="podcast"
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    "🎬 YouTube Videos",
+                    callback_data="videos"
+                ),
+                InlineKeyboardButton(
+                    "📖 Vocabulary",
+                    callback_data="vocabulary"
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    "📝 Grammar Practice",
+                    callback_data="grammar"
+                ),
+                InlineKeyboardButton(
+                    "🗣️ Speaking Practice",
+                    callback_data="speaking"
+                ),
+            ],
+            [
+                InlineKeyboardButton(
+                    "ℹ️ About",
+                    callback_data="about"
+                ),
+            ],
+        ]
+
+        await query.edit_message_text(
+            "👋 Welcome to The Speaking English Channel!\n\n"
+            "Improve your English with real-life conversations, "
+            "useful expressions, vocabulary, grammar, and speaking practice.\n\n"
+            "Choose an option below to get started. 🌟",
+            reply_markup=InlineKeyboardMarkup(keyboard),
+        )
+
+        return
+
+    # Other sections
     responses = {
+
         "learn": (
             "📚 Learn English\n\n"
-            "Practice practical English for everyday situations.\n\n"
-            "New lessons will be added here soon!"
+            "Learn practical English for everyday situations.\n\n"
+            "New lessons will be added here soon! 🌟"
         ),
+
         "podcast": (
             "🎧 Podcasts\n\n"
             "Listen to The Speaking English Channel "
-            "and improve your English through natural conversations."
+            "and improve your English through natural conversations.\n\n"
+            "Podcast episodes will be added here soon! 🎙️"
         ),
-        "videos": (
-            "🎬 YouTube Videos\n\n"
-            "Watch our latest English-learning videos "
-            "and practice with Emma and Daniel."
-        ),
+
         "vocabulary": (
             "📖 Vocabulary\n\n"
-            "Build your vocabulary with useful everyday English words "
-            "and expressions."
+            "Build your vocabulary with useful everyday "
+            "English words and expressions.\n\n"
+            "Vocabulary practice will be added here soon! 📚"
         ),
+
         "grammar": (
             "📝 Grammar Practice\n\n"
             "Practice English grammar with simple explanations "
-            "and short exercises."
+            "and short exercises.\n\n"
+            "Grammar exercises will be added here soon! ✏️"
         ),
+
         "speaking": (
             "🗣️ Speaking Practice\n\n"
-            "Practice speaking English using real-life situations."
+            "Practice speaking English using real-life situations.\n\n"
+            "Interactive speaking practice will be added here soon! 🎤"
         ),
+
         "about": (
             "ℹ️ About The Speaking English Channel\n\n"
-            "We help English learners improve their vocabulary, "
-            "grammar, listening, and speaking through practical "
-            "English content."
+            "The Speaking English Channel helps English learners "
+            "improve their vocabulary, grammar, listening, "
+            "speaking, and everyday communication skills.\n\n"
+            "Learn English. Speak English. "
+            "Speak with confidence. 🗣️"
         ),
     }
 
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "⬅️ Back to Menu",
+                callback_data="back"
+            )
+        ]
+    ]
+
     await query.edit_message_text(
-        responses.get(query.data, "Please choose an option from the menu.")
+        responses.get(
+            query.data,
+            "Please choose an option from the menu."
+        ),
+        reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
 
+# =========================
+# COMMANDS
+# =========================
+
 async def learn(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     await update.message.reply_text(
         "📚 Learn English\n\n"
-        "Practice practical English for everyday situations.\n\n"
-        "New lessons will be added here soon!"
+        "Learn practical English for everyday situations.\n\n"
+        "New lessons will be added here soon! 🌟"
     )
 
 
 async def podcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     await update.message.reply_text(
         "🎧 Podcasts\n\n"
         "Listen to The Speaking English Channel "
@@ -131,21 +268,36 @@ async def podcast(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def videos(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                "▶️ Open YouTube Channel",
+                url="https://youtube.com/@thespeakingenglishchannel"
+            )
+        ]
+    ]
+
     await update.message.reply_text(
-        "🎬 YouTube Videos\n\n"
-        "Watch our latest English-learning videos."
+        "🎬 Watch The Speaking English Channel on YouTube! 🎬\n\n"
+        "Improve your English with practical lessons, "
+        "real-life conversations, vocabulary, grammar, "
+        "and speaking practice.",
+        reply_markup=InlineKeyboardMarkup(keyboard),
     )
 
 
 async def vocabulary(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     await update.message.reply_text(
         "📖 Vocabulary\n\n"
-        "Build your vocabulary with useful everyday English words "
-        "and expressions."
+        "Build your vocabulary with useful everyday "
+        "English words and expressions."
     )
 
 
 async def grammar(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     await update.message.reply_text(
         "📝 Grammar Practice\n\n"
         "Practice English grammar with simple explanations "
@@ -154,6 +306,7 @@ async def grammar(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def speaking(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     await update.message.reply_text(
         "🗣️ Speaking Practice\n\n"
         "Practice speaking English using real-life situations."
@@ -161,36 +314,9 @@ async def speaking(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def about(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
     await update.message.reply_text(
         "ℹ️ About The Speaking English Channel\n\n"
         "Learn English through practical conversations, "
         "vocabulary, grammar, podcasts, and speaking practice."
     )
-
-
-def main():
-    # Start Flask web server for Render
-    web_thread = threading.Thread(target=run_web_server)
-    web_thread.daemon = True
-    web_thread.start()
-
-    # Create Telegram bot
-    application = Application.builder().token(BOT_TOKEN).build()
-
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("learn", learn))
-    application.add_handler(CommandHandler("podcast", podcast))
-    application.add_handler(CommandHandler("videos", videos))
-    application.add_handler(CommandHandler("vocabulary", vocabulary))
-    application.add_handler(CommandHandler("grammar", grammar))
-    application.add_handler(CommandHandler("speaking", speaking))
-    application.add_handler(CommandHandler("about", about))
-
-    application.add_handler(CallbackQueryHandler(button_handler))
-
-    # Start Telegram bot
-    application.run_polling()
-
-
-if __name__ == "__main__":
-    main()
