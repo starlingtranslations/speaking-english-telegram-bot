@@ -139,15 +139,19 @@ def level_name(level):
     return "Mixed Level" if level == "MIXED" else f"Level {level}"
 
 
-async def send_or_edit(update, text, reply_markup=None, parse_mode="HTML"):
-    if update.callback_query:
-        await update.callback_query.edit_message_text(
+async def send_or_edit(update_or_query, text, reply_markup=None, parse_mode="HTML"):
+    # This helper accepts either a Telegram Update (command/message)
+    # or a Telegram CallbackQuery (inline-button click).
+    # The previous version treated CallbackQuery like Update, which caused
+    # "Something went wrong" whenever an inline button was pressed.
+    if hasattr(update_or_query, "edit_message_text"):
+        await update_or_query.edit_message_text(
             text=text,
             reply_markup=reply_markup,
             parse_mode=parse_mode,
         )
     else:
-        await update.message.reply_text(
+        await update_or_query.message.reply_text(
             text=text,
             reply_markup=reply_markup,
             parse_mode=parse_mode,
